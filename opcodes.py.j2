@@ -1,0 +1,30 @@
+from opcodes import OpCodes
+
+class R5900Gen(OpCodes):
+
+    def opcode_hook(self):
+{% for instruction in instructions %}
+        # {{ instruction.name | upper }} {% for arg in instruction.args %} {{ arg.name }} {% if not loop.last %}, {% endif %} {% endfor %}
+        if self.opcode & {{ instruction.pattern | hex }} == {{ instruction.match | hex }}:
+            self.instr_{{ instruction.name }}( {% for arg in instruction.args -%} self.opcode & {{ arg.pattern | hex }} {%- if arg.shl > 0 %} << {{ arg.shl }} {% elif arg.shr > 0 %} >> {{ arg.shr }} {% endif -%} {%- if not loop.last %}, {% endif -%} {%- endfor %} )
+            return True
+{% endfor %}
+        # XXX error handling
+        self.error(self.addr, self.opcode, None, "UNKNOWN OP CODE")
+        return False
+
+{% for instruction in instructions %}
+    def instr_{{ instruction.name }}( self, {% for arg in instruction.args %} {{ arg.name }} {% if not loop.last %}, {% endif %} {% endfor %} ):
+         """{{ instruction.name | upper }} {% for arg in instruction.args %} {{ arg.name }} {% if not loop.last %}, {% endif %} {% endfor %}
+
+        Mask   : {{ instruction.pattern | dwbin }}
+        OPCODE : {{ instruction.match | dwbin }}
+
+        Arguments:
+        {% for arg in instruction.args %} 
+        {{ loop.index }}. {{ arg.name }}
+        Mask   : {{ arg.pattern | dwbin }}
+        {% endfor %}
+        """
+        pass
+{% endfor %}
