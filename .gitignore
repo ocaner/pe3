@@ -1,0 +1,4 @@
+bios/**
+*.ui
+*.pyproject
+*.pyproject.user
