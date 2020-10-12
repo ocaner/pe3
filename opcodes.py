@@ -31,18 +31,22 @@ class OpCodes(object):
 
         self.callback.opcode_success(addr, opcode, msg)
 
+    def inc_pc(self):
+        pass
+
     def opcode_hook(self, opcode):
         pass
 
     def parse(self, addr, dword):
-        print(f"{addr:08x} => {dword:08x}")
+        print(f"{addr:08x} => {dword}")
         self.addr = addr
         self.opcode = unpack("<I", dword)[0]
         print(f"> {addr:08x} ==> HEX: {self.opcode:08x} / {self.opcode:032b}")
 
-        if OpCode.NOOP == self.opcode:
+        if OpCodes.NOOP == self.opcode:
             print("=> NOOP")
-            self.cb(addr, self.opcode, "NOOP")
+            self.notify(addr, self.opcode, "NOOP")
+            self.inc_pc()
             return
 
         self.opcode_hook()

@@ -88,7 +88,7 @@ for instruction, options in instructions.items():
 
     instrs.append(instr)
 
-    print(f"{instr.name.upper()} => {instr}")
+    #print(f"{instr.name.upper()} => {instr}")
 
 def pbin(value, size=32):
     fmt = "{{0:0{0}b}}".format(size)

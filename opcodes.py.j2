@@ -6,7 +6,7 @@ class R5900Gen(OpCodes):
 {% for instruction in instructions %}
         # {{ instruction.name | upper }} {% for arg in instruction.args %} {{ arg.name }} {% if not loop.last %}, {% endif %} {% endfor %}
         if self.opcode & {{ instruction.pattern | hex }} == {{ instruction.match | hex }}:
-            self.instr_{{ instruction.name }}( {% for arg in instruction.args -%} self.opcode & {{ arg.pattern | hex }} {%- if arg.shl > 0 %} << {{ arg.shl }} {% elif arg.shr > 0 %} >> {{ arg.shr }} {% endif -%} {%- if not loop.last %}, {% endif -%} {%- endfor %} )
+            self.instr_{{ instruction.name }}( "{{ instruction.name|upper + ' ' + instruction.format }}", {% for arg in instruction.args -%} self.opcode & {{ arg.pattern | hex }} {%- if arg.shl > 0 %} << {{ arg.shl }} {% elif arg.shr > 0 %} >> {{ arg.shr }} {% endif -%} {%- if not loop.last %}, {% endif -%} {%- endfor %} )
             return True
 {% endfor %}
         # XXX error handling
@@ -14,8 +14,8 @@ class R5900Gen(OpCodes):
         return False
 
 {% for instruction in instructions %}
-    def instr_{{ instruction.name }}( self, {% for arg in instruction.args %} {{ arg.name }} {% if not loop.last %}, {% endif %} {% endfor %} ):
-         """{{ instruction.name | upper }} {% for arg in instruction.args %} {{ arg.name }} {% if not loop.last %}, {% endif %} {% endfor %}
+    def instr_{{ instruction.name }}( self, fmt, {% for arg in instruction.args %} {{ arg.name }} {% if not loop.last %}, {% endif %} {% endfor %} ):
+        {#"""{{ instruction.name | upper }} {% for arg in instruction.args %} {{ arg.name }} {% if not loop.last %}, {% endif %} {% endfor %}
 
         Mask   : {{ instruction.pattern | dwbin }}
         OPCODE : {{ instruction.match | dwbin }}
@@ -25,6 +25,6 @@ class R5900Gen(OpCodes):
         {{ loop.index }}. {{ arg.name }}
         Mask   : {{ arg.pattern | dwbin }}
         {% endfor %}
-        """
+        """#}
         pass
 {% endfor %}
